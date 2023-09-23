@@ -1,0 +1,143 @@
+using System;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Windows.Forms;
+
+namespace EducationManagement
+{
+    public partial class ApplicationForm : Form
+    {
+        public string connectionString = ConfigurationSettings.AppSettings["connString"].ToString();
+        public ApplicationForm()
+        {
+            InitializeComponent();
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            txtStudentId.Enabled = true;
+            txtStudentId.Focus();
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            SaveData();
+        }
+
+        private void SaveData()
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand com = new SqlCommand("INSERT INTO tblStudentNew VALUES(@StudentName, @Roll, @AdmissionDate)", con);            
+
+            com.Parameters.Add("@StudentName", SqlDbType.NVarChar, 50);
+            com.Parameters["@StudentName"].Value = txtStudentName.Text;
+
+            com.Parameters.Add("@Roll", SqlDbType.Int);
+            com.Parameters["@Roll"].Value = txtRoll.Text;
+
+            com.Parameters.Add("@AdmissionDate", SqlDbType.DateTime);
+            com.Parameters["@AdmissionDate"].Value = dtpAdmissionDate.Value;
+
+            try
+            {
+                con.Open();
+                com.ExecuteNonQuery();
+                ClearData();
+                MessageBox.Show("Saved Successfully.");
+            }
+
+            catch(Exception ex)
+            {
+                MessageBox.Show("Unsuccessfull !!!");
+            }
+
+            finally
+            {
+                con.Close();
+            }
+        }
+
+        private void ClearData()
+        {
+            txtStudentName.Text = "";
+            txtRoll.Text = "0";
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            UpdateData();
+        }
+
+        private void UpdateData()
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand com = new SqlCommand("UPDATE tblStudentNew SET StudentName = @StudentName, Roll = @Roll, AdmissionDate = @AdmissionDate WHERE StudentId = @StudentId", con);
+
+            com.Parameters.Add("@StudentName", SqlDbType.NVarChar, 50);
+            com.Parameters["@StudentName"].Value = txtStudentName.Text;
+
+            com.Parameters.Add("@Roll", SqlDbType.Int);
+            com.Parameters["@Roll"].Value = txtRoll.Text;
+
+            com.Parameters.Add("@AdmissionDate", SqlDbType.DateTime);
+            com.Parameters["@AdmissionDate"].Value = dtpAdmissionDate.Value;
+
+            com.Parameters.Add("@StudentId", SqlDbType.Int);
+            com.Parameters["@StudentId"].Value = txtStudentId.Text;
+
+            try
+            {
+                con.Open();
+                com.ExecuteNonQuery();
+                ClearData();
+                MessageBox.Show("Updated Successfully.");
+            }
+
+            catch(Exception ex)
+            {
+                MessageBox.Show("Unsuccessfully !!!");
+            }
+
+            finally
+            {
+                con.Close();
+            }
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            DeleteData();
+        }
+
+        private void DeleteData()
+        {
+            SqlConnection con = new SqlConnection(connectionString);
+            SqlCommand com = new SqlCommand("DELETE FROM tblStudentNew WHERE StudentId = @StudentId", con);
+
+            com.Parameters.Add("@StudentId", SqlDbType.Int);
+            com.Parameters["@StudentId"].Value = txtStudentId.Text;
+
+            try
+            {
+                con.Open();
+                com.ExecuteNonQuery();
+                MessageBox.Show("Deleted Successfully.");
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("Deleted Unuccessfully.");
+            }
+
+            finally {
+                con.Close();
+            }
+        }
+    }
+}
