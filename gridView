@@ -1,0 +1,4 @@
+            SqlDataAdapter dt = new SqlDataAdapter(com);
+            DataTable da = new DataTable();
+            dt.Fill(da);
+            dataGridView1.DataSource = dt;
