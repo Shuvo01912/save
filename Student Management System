@@ -1,0 +1,278 @@
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics.Eventing.Reader;
+using System.Xml.Linq;
+
+namespace Student_management_System
+{
+    public partial class Form1 : Form
+    {
+
+        public string connectiondone = ConfigurationSettings.AppSettings["connected"].ToString();
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            DataDelete();
+        }
+
+        private void DataDelete()
+        {
+
+
+            /// SqlConnection con=new SqlConnection("connectiondone");
+            SqlConnection con = new SqlConnection(connectiondone);
+
+            SqlCommand cmd = new SqlCommand("delete from tblStudent where StudentId = @StudentId", con);
+
+            cmd.Parameters.Add("@StudentId", SqlDbType.Int);
+            cmd.Parameters["@StudentId"].Value = txtStudentId.Text;
+
+
+            try
+            {
+
+                con.Open();
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Delete successful", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("Delete Unsuccessful", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            finally
+            {
+                con.Close();
+            }
+        }
+
+
+        private void btnDelete_MouseHover(object sender, EventArgs e)
+        {
+            btnDelete.BackColor = Color.Red;
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            DataSave();
+            DataClear();
+        }
+
+        public void DataClear()
+        {
+            txtStudentName.Clear();
+            txtRoll.Clear();
+            txtStudentName.Focus();
+
+        }
+
+        private void DataSave()
+        {
+            SqlConnection con = new SqlConnection(connectiondone);
+            SqlCommand com = new SqlCommand("insert into tblStudent values(@StudentName, @Roll, @AddmissionDate)", con);
+
+
+            com.Parameters.Add("@StudentName", SqlDbType.NVarChar, 50);
+            com.Parameters["@StudentName"].Value = txtStudentName.Text;
+
+            com.Parameters.Add("@Roll", SqlDbType.Int);
+            com.Parameters["@Roll"].Value = txtRoll.Text;
+
+            com.Parameters.Add("@AddmissionDate", SqlDbType.Date);
+            com.Parameters["@AddmissionDate"].Value = dtpAddmission.Value;
+
+
+
+
+            try
+            {
+                con.Open();
+                com.ExecuteNonQuery();
+                MessageBox.Show("Save SuccessFully");
+
+            }
+
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("Save UnSuccessFully");
+
+            }
+
+            finally
+            {
+
+                con.Close();
+            }
+
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+
+            DataUpdate();
+            DataClear();
+
+        }
+
+        private void DataUpdate()
+        {
+
+
+            SqlConnection con = new SqlConnection(connectiondone);
+            SqlCommand com = new SqlCommand("update tblStudent set StudentName = @StudentName , Roll = @Roll , AddmissionDate = @AddmissionDate where StudentId = @StudentId ", con);
+
+            com.Parameters.Add("@StudentName", SqlDbType.NVarChar, 50);
+            com.Parameters["@StudentName"].Value = txtStudentName.Text;
+
+            com.Parameters.Add("@Roll", SqlDbType.Int);
+            com.Parameters["@Roll"].Value = txtRoll.Text;
+
+            com.Parameters.Add("@AddmissionDate", SqlDbType.Date);
+            com.Parameters["@AddmissionDate"].Value = dtpAddmission.Value;
+
+
+            com.Parameters.Add("@StudentId", SqlDbType.Int);
+            com.Parameters["@StudentId"].Value = txtStudentId.Text;
+
+
+            try
+            {
+                con.Open();
+                com.ExecuteNonQuery();
+                MessageBox.Show("Update successful", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Update Unsuccessful", "information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+
+
+            finally { con.Close(); }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            txtStudentId.Enabled = true;
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void lblSearch_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            reportData();
+        }
+
+        private void reportData()
+        {
+
+            SqlConnection con = new SqlConnection(connectiondone);
+            SqlCommand com = new SqlCommand("select * from tblStudent where Roll = @Roll", con);
+
+            com.Parameters.Add("@Roll", SqlDbType.Int);
+            com.Parameters["@Roll"].Value = txtSearch.Text;
+
+            SqlDataAdapter search = new SqlDataAdapter(com);
+            DataTable Data = new DataTable();
+            search.Fill(Data);
+            dataGridView1.DataSource = Data;
+
+            try
+            {
+
+                con.Open();
+                com.ExecuteNonQuery();
+
+            }
+
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("UnDone");
+            }
+
+            finally { con.Close(); }
+
+        }
+
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void txtSearch_Validated(object sender, EventArgs e)
+        {
+
+
+        }
+
+        private void btnShowAll_Click(object sender, EventArgs e)
+        {
+            ShowAll();
+        }
+
+
+        private void ShowAll()
+        {
+
+            SqlConnection con = new SqlConnection(connectiondone);
+            SqlCommand com = new SqlCommand("select * from tblStudent", con);
+
+
+            SqlDataAdapter search = new SqlDataAdapter(com);
+            DataTable Data = new DataTable();
+            search.Fill(Data);
+            dataGridView1.DataSource = Data;
+
+            try
+            {
+
+                con.Open();
+                com.ExecuteNonQuery();
+
+            }
+
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("UnDone");
+            }
+
+            finally { con.Close(); }
+
+        }
+    }
+
+
+
+}
